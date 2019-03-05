@@ -1,0 +1,5 @@
+db:
+  adapter: mysql
+  name: mteg_cms
+  user: root
+  password : _media_

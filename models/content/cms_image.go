@@ -9,7 +9,8 @@ import (
 // db Image Model
 type CMS_Image struct {
 	gorm.Model
-	Width                                   int
-	Height                                  int
-	CMS_ContentID int
+	FileExtension string
+	Width         int
+	Height        int
+	CMS_ContentID uint
 }
