@@ -1,6 +1,7 @@
 package API
 
 import (
+<<<<<<< HEAD
 	"CMS/config/db"
 	"CMS/models/content"
 	"fmt"

@@ -8,6 +8,7 @@ import (
 	//_ "CMS/config/db/migrations"
 
 	//"log"
+<<<<<<< HEAD
 	//"github.com/qor/admin"
 	"CMS/app/API"
 	"CMS/config/db"
@@ -41,6 +42,4 @@ func main() {
 		API.UpdateMediainfo(res, req)
 	})
 
-	fmt.Println("Listening on: 9000")
-	http.ListenAndServe(":9000", mux)
 }
