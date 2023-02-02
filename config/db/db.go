@@ -1,35 +1,45 @@
-package db
+package DB
 
 import (
-	"errors"
-	"fmt"
-	"os"
+	"CMS/Config"
+	"database/sql"
+	"log"
 
-	"CMS/config"
-
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-// DB Global DB connection
-var DB *gorm.DB
+//외부에서 사용할 수 있도록 패키지Func의 첫글자는 대문자
+//패키지 관련 정보
+//http://pyrasis.com/book/GoForTheReallyImpatient/Unit39
 
-//main함수가 있건 없건  pakage를 import할 시점에 init()함수가 호출됨.
-func init() {
+var (
+	DBCon *sql.DB // Note the sql package provides the namespace
+	Conf  Config.Configuration
+)
+
+func Init() {
+	Conf = Config.GetConfiguration()
 	var err error
-
-	dbConfig := config.Config.DB
-	if config.Config.DB.Adapter == "mysql" {
-		DB, err = gorm.Open("mysql", fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=True&loc=Local", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name))
-	} else {
-		panic(errors.New("not supported database adapter"))
+	DBCon, err = sql.Open("mysql", Conf.DBInfo)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if err == nil {
-		if os.Getenv("DEBUG") != "" {
-			DB.LogMode(true)
-		}
-	} else {
+}
+
+func CloseDB() {
+	DBCon.Close()
+}
+func checkCount(rows *sql.Rows) (count int) {
+	for rows.Next() {
+		err := rows.Scan(&count)
+		checkErr(err)
+	}
+	return count
+}
+
+func checkErr(err error) {
+	if err != nil {
 		panic(err)
 	}
 }
