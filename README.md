@@ -8,4 +8,15 @@ Golang을 이용한 기본 웹서버
 * 필수 Library
 	- Golang
 	- Mysql : 8.0.13, InnoDB
+	- github.com/rs/cors
+	- github.com/go-sql-driver/mysql
+	- github.com/lestrrat/go-file-rotatelogs
+	- github.com/jinzhu/gorm
+	- github.com/jinzhu/configor
+	- github.com/jinzhu/now
+	- gopkg.in/ini.v1
+	- github.com/caarlos0/env
 
+
+GOPATH = ex) d:\MyProject\Workspace_BasicWebServer\
+GOROOT = go install path

@@ -1,24 +1,62 @@
-package config
+package Config
 
 import (
-	"github.com/jinzhu/configor"
+	"fmt"
+
+	"github.com/caarlos0/env"
+	"gopkg.in/ini.v1"
 )
 
-var Config = struct {
-	//HTTPS bool `default:"false" env:"HTTPS"`
-	//Port  uint `default:"7000" env:"PORT"`
-	DB struct {
-		Name     string `env:"DBName" default:"mteg_cms"`
-		Adapter  string `env:"DBAdapter" default:"mysql"`
-		Host     string `env:"DBHost" default:"localhost"`
-		Port     string `env:"DBPort" default:"3306"`
-		User     string `env:"DBID"  default:"root"`
-		Password string `env:"DBPW"  default:"_media_"`
-	}
-}{}
+type Configuration struct {
 
-func init() {
-	if err := configor.Load(&Config, "config/database.yml"); err != nil {
-		panic(err)
+	//검사<->관리서버 이미지 전달 FTP 설정
+	IsConnectProjectManager string `env:"bIsConnectProjectManager" envDefault:"false"`
+	PMIPAddress             string `env:"PMIPAddress" envDefault:""`
+	WatchCallbackURL        string `env:"WatchCallbackURL" envDefault:""`
+	WatcherURL              string `env:"WatcherURL" envDefault:""`
+	PMPort                  string `env:"PMPort" envDefault:""`
+	PMURL                   string `env:"PMURL" envDefault:""`
+	PushType                string `env:"PushType" envDefault:"None"`
+	AnalyzerURL             string `env:"AnalyzerURL" envDefault:""`
+	DBInfo                  string `env:"DBInfo" envDefault:""`
+}
+
+//GetConfiguration
+func GetConfiguration() Configuration {
+	configuration := Configuration{}
+	err := env.Parse(&configuration)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
 	}
+
+	cfg, err := ini.Load("setting.ini")
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		fmt.Printf("setting.ini is not found\n")
+	}
+	configuration.IsConnectProjectManager = cfg.Section("CommunitySetting").Key("bIsConnectProjectManager").String()
+
+	configuration.PushType = cfg.Section("CommunitySetting").Key("PushType").String()
+
+	if configuration.IsConnectProjectManager == "true" {
+		fmt.Printf("Config bIsConnect is true\n")
+
+		configuration.PMIPAddress = cfg.Section("CommunitySetting").Key("PMIPAddress").String()
+		configuration.PMPort = cfg.Section("CommunitySetting").Key("PMPort").String()
+		configuration.PMURL = cfg.Section("CommunitySetting").Key("PMURL").String()
+		fmt.Printf("Config PMIPAddress : " + configuration.PMIPAddress + "\n")
+		fmt.Printf("Config PMPort : " + configuration.PMPort + "\n")
+		fmt.Printf("Config PMURL : " + configuration.PMURL + "\n")
+
+	} else {
+		fmt.Printf("Config bIsConnect is false\n")
+		configuration.PMIPAddress = ""
+		configuration.PMPort = ""
+		configuration.PMURL = ""
+	}
+	configuration.WatchCallbackURL = cfg.Section("CommunitySetting").Key("WatchCallbackURL").String()
+	configuration.WatcherURL = cfg.Section("CommunitySetting").Key("WatcherURL").String()
+	configuration.AnalyzerURL = cfg.Section("CommunitySetting").Key("AnalyzerURL").String()
+	configuration.DBInfo = cfg.Section("CommunitySetting").Key("DBInfo").String()
+	return configuration
 }
